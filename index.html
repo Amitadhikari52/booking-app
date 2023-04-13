@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Booking App</title>
+  </head>
+  <body>
+    <h1>Booking App</h1>
+    <form id="booking-form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name"><br>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email"><br>
+
+      <label for="phone">Phone Number:</label>
+      <input type="tel" id="phone" name="phone"><br>
+
+      <input type="submit" value="Submit">
+    </form>
+
+    <div id="booking-info"></div>
+
+    <script>
+      const bookingForm = document.getElementById('booking-form');
+      const bookingInfo = document.getElementById('booking-info');
+
+      bookingForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const bookingData = { name, email, phone };
+        localStorage.setItem('bookingData', JSON.stringify(bookingData));
+        bookingInfo.innerHTML = `
+          <p>Name: ${name}</p>
+          <p>Email: ${email}</p>
+          <p>Phone Number: ${phone}</p>
+        `;
+      });
+
+      const savedBookingData = localStorage.getItem('bookingData');
+      if (savedBookingData) {
+        const { name, email, phone } = JSON.parse(savedBookingData);
+        bookingInfo.innerHTML = `
+          <p>Name: ${name}</p>
+          <p>Email: ${email}</p>
+          <p>Phone Number: ${phone}</p>
+        `;
+      }
+    </script>
+  </body>
+</html>
