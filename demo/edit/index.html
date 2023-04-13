@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Booking App</title>
+  </head>
+  <body>
+    <h1>Booking App</h1>
+    <form id="booking-form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name"><br>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email"><br>
+
+      <label for="phone">Phone Number:</label>
+      <input type="tel" id="phone" name="phone"><br>
+
+      <input type="hidden" id="edit-index" name="edit-index">
+      <input type="submit" value="Submit">
+    </form>
+
+    <div id="booking-list"></div>
+
+    <script>
+      const bookingForm = document.getElementById('booking-form');
+      const bookingList = document.getElementById('booking-list');
+
+      bookingForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const editIndex = document.getElementById('edit-index').value;
+        let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+
+        if (editIndex) {
+          // If editIndex exists, update the booking at that index
+          bookings[editIndex] = { name, email, phone };
+        } else {
+          // Otherwise, add a new booking to the end of the list
+          bookings.push({ name, email, phone });
+        }
+
+        localStorage.setItem('bookings', JSON.stringify(bookings));
+        showBookings();
+        bookingForm.reset();
+        document.getElementById('edit-index').value = '';
+      });
+
+      function showBookings() {
+        let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        let bookingItems = '';
+        for (let i = 0; i < bookings.length; i++) {
+          const booking = bookings[i];
+          const bookingHtml = `
+            <div>
+              <p>Name: ${booking.name}</p>
+              <p>Email: ${booking.email}</p>
+              <p>Phone Number: ${booking.phone}</p>
+              <button class="edit-button" data-index="${i}">Edit</button>
+              <button class="delete-button" data-index="${i}">Delete</button>
+            </div>
+          `;
+          bookingItems += bookingHtml;
+        }
+        bookingList.innerHTML = bookingItems;
+      }
+
+      bookingList.addEventListener('click', (event) => {
+        if (event.target.classList.contains('delete-button')) {
+          const index = event.target.dataset.index;
+          let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+          bookings.splice(index, 1);
+          localStorage.setItem('bookings', JSON.stringify(bookings));
+          showBookings();
+        } else if (event.target.classList.contains('edit-button')) {
+          const index = event.target.dataset.index;
+          let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+          const booking = bookings[index];
+          document.getElementById('name').value = booking.name;
+          document.getElementById('email').value = booking.email;
+          document.getElementById('phone').value = booking.phone;
+          document.getElementById('edit-index').value = index;
+        }
+      });
+
+      showBookings();
+    </script>
+  </body>
+</html>
